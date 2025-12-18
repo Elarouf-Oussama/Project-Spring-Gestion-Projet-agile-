@@ -16,5 +16,5 @@ public class JwtResponse {
     private Long id;
     private String username;
     private String email;
-    private String role; // Pour que le Front sache si c'est un PO, SM ou Dev
+    private String role;
 }

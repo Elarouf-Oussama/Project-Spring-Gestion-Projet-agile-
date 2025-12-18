@@ -15,6 +15,6 @@ public class UserStoryResponse {
     private Priority priority;
     private Integer storyPoints;
     private TaskStatus status;
-    private String sprintName; // Juste le nom, pas tout l'objet Sprint
-    private String epicTitle;  // Juste le titre
+    private String sprintName;
+    private String epicTitle;
 }

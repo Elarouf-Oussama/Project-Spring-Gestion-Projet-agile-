@@ -5,7 +5,7 @@ public enum Priority {
     SHOULD_HAVE,
     COULD_HAVE,
     WONT_HAVE,
-    HIGH, // Pour compatibilité simple
+    HIGH,
     MEDIUM,
     LOW
 }

@@ -14,6 +14,8 @@ public class ProductBacklog {
 
     private String nom;
 
+    private String description;
+
     @OneToMany(mappedBy = "productBacklog", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<UserStory> userStories = new ArrayList<>();
 
