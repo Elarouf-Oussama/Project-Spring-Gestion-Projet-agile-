@@ -2,7 +2,9 @@ package com.agile_project_management.controller;
 
 import com.agile_project_management.dto.request.UserStoryRequest;
 import com.agile_project_management.dto.response.UserStoryResponse;
+import com.agile_project_management.model.SprintBacklog;
 import com.agile_project_management.model.UserStory;
+import com.agile_project_management.service.ISprintBacklogService;
 import com.agile_project_management.service.IUserStoryService;
 import com.agile_project_management.utils.EntityMapper;
 import jakarta.validation.Valid;
@@ -17,10 +19,11 @@ import java.util.stream.Collectors;
 @RestController
 @RequestMapping("/api/stories")
 @RequiredArgsConstructor
-@CrossOrigin(origins = "*") // Autorise le frontend (Angular/React)
+@CrossOrigin(origins = "*")
 public class UserStoryController {
 
     private final IUserStoryService userStoryService;
+    private final ISprintBacklogService sprintBacklogService;
     private final EntityMapper mapper;
 
     // 1. Créer une User Story
@@ -34,17 +37,20 @@ public class UserStoryController {
     // 2. Récupérer toutes les stories d'un Sprint
     @GetMapping("/sprint/{sprintId}")
     public ResponseEntity<List<UserStoryResponse>> getStoriesBySprint(@PathVariable Long sprintId) {
-        List<UserStory> stories = userStoryService.getStoriesBySprint(sprintId);
+        SprintBacklog backlog = sprintBacklogService.getSprintBacklogBySprintId(sprintId);
+        List<UserStory> stories = userStoryService.getStoriesBySprintBacklog(backlog.getId());
+
         List<UserStoryResponse> response = stories.stream()
                 .map(mapper::toUserStoryResponse)
                 .collect(Collectors.toList());
         return ResponseEntity.ok(response);
     }
 
-    // 3. Récupérer toutes les stories du Backlog
+    // 3. Récupérer toutes les stories du Product Backlog
     @GetMapping("/backlog/{backlogId}")
-    public ResponseEntity<List<UserStoryResponse>> getStoriesByBacklog(@PathVariable Long backlogId) {
-        List<UserStory> stories = userStoryService.getStoriesByBacklog(backlogId);
+    public ResponseEntity<List<UserStoryResponse>> getStoriesByProductBacklog(@PathVariable Long backlogId) {
+        List<UserStory> stories = userStoryService.getStoriesByProductBacklog(backlogId);
+
         List<UserStoryResponse> response = stories.stream()
                 .map(mapper::toUserStoryResponse)
                 .collect(Collectors.toList());

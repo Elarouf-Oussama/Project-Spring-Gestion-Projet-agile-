@@ -40,8 +40,8 @@ public class UserStory {
     private Epic epic;
 
     @ManyToOne
-    @JoinColumn(name = "sprint_id")
-    private Sprint sprint;
+    @JoinColumn(name = "sprint_backlog_id")
+    private SprintBacklog sprintBacklog;
 
     @OneToMany(mappedBy = "userStory", cascade = CascadeType.ALL)
     private List<Task> tasks = new ArrayList<>();

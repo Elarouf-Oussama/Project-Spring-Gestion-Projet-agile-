@@ -8,13 +8,11 @@ import lombok.Data;
 public class UserStoryRequest {
     @NotBlank(message = "Le titre est obligatoire")
     private String title;
-
     private String description;
     private String acceptanceCriteria;
     private Priority priority;
     private Integer storyPoints;
-
     private Long productBacklogId;
     private Long epicId;
-    private Long sprintId;
+    private Long sprintBacklogId;
 }

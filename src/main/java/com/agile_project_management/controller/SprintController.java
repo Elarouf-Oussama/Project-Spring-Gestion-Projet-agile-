@@ -21,6 +21,17 @@ public class SprintController {
         return ResponseEntity.ok(sprintService.createSprint(sprint));
     }
 
+    @PutMapping("/{id}")
+    public ResponseEntity<Sprint> updateSprint(@PathVariable Long id, @RequestBody Sprint sprint) {
+        return ResponseEntity.ok(sprintService.updateSprint(id, sprint));
+    }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> deleteSprint(@PathVariable Long id) {
+        sprintService.deleteSprint(id);
+        return ResponseEntity.noContent().build();
+    }
+
     @GetMapping
     public ResponseEntity<List<Sprint>> getAllSprints() {
         return ResponseEntity.ok(sprintService.getAllSprints());

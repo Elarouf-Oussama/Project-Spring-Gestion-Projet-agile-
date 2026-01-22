@@ -2,10 +2,14 @@ package com.agile_project_management.service.impl;
 
 import com.agile_project_management.exception.ResourceNotFoundException;
 import com.agile_project_management.model.Sprint;
+import com.agile_project_management.model.UserStory;
 import com.agile_project_management.repository.SprintRepository;
+import com.agile_project_management.repository.UserStoryRepository;
+import com.agile_project_management.service.ISprintBacklogService;
 import com.agile_project_management.service.ISprintService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
@@ -14,11 +18,17 @@ import java.util.List;
 public class SprintServiceImpl implements ISprintService {
 
     private final SprintRepository sprintRepository;
-
+    private final ISprintBacklogService sprintBacklogService;
+    private final UserStoryRepository userStoryRepository;
     @Override
+    @Transactional // garantir que Sprint + Backlog sont créés ensemble
     public Sprint createSprint(Sprint sprint) {
-        sprint.setStatus("PLANNED"); // Statut par défaut
-        return sprintRepository.save(sprint);
+        sprint.setStatus("PLANNED");
+        Sprint savedSprint = sprintRepository.save(sprint);
+
+        // Création auto du SprintBacklog
+        sprintBacklogService.createSprintBacklogForSprint(savedSprint.getId());
+        return savedSprint;
     }
 
     @Override
@@ -43,8 +53,18 @@ public class SprintServiceImpl implements ISprintService {
     }
 
     @Override
+    @Transactional
     public void deleteSprint(Long id) {
         Sprint sprint = getSprintById(id);
+
+        if (sprint.getSprintBacklog() != null) {
+            List<UserStory> stories = sprint.getSprintBacklog().getUserStories();
+            // couper le lien avec le SprintBacklog pour chaque story
+            for (UserStory story : stories) {
+                story.setSprintBacklog(null);
+                userStoryRepository.save(story);
+            }
+        }
         sprintRepository.delete(sprint);
     }
 }

@@ -15,10 +15,6 @@ public class Epic {
     private String title;
     private String description;
 
-    @ManyToOne
-    @JoinColumn(name = "product_backlog_id")
-    private ProductBacklog productBacklog;
-
     @OneToMany(mappedBy = "epic")
     private List<UserStory> userStories = new ArrayList<>();
 }

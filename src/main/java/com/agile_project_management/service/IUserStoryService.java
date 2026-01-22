@@ -9,7 +9,7 @@ public interface IUserStoryService {
     void deleteUserStory(Long id);
     UserStory getUserStoryById(Long id);
 
-    // Logique métier spécifique agile
-    List<UserStory> getStoriesByBacklog(Long backlogId);
-    List<UserStory> getStoriesBySprint(Long sprintId);
+    // Logique métier agile
+    List<UserStory> getStoriesByProductBacklog(Long backlogId);
+    List<UserStory> getStoriesBySprintBacklog(Long sprintBacklogId);
 }

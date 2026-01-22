@@ -2,9 +2,11 @@ package com.agile_project_management.service.impl;
 
 import com.agile_project_management.exception.ResourceNotFoundException;
 import com.agile_project_management.model.ProductBacklog;
+import com.agile_project_management.model.SprintBacklog;
 import com.agile_project_management.model.UserStory;
 import com.agile_project_management.model.enums.TaskStatus;
 import com.agile_project_management.repository.ProductBacklogRepository;
+import com.agile_project_management.repository.SprintBacklogRepository;
 import com.agile_project_management.repository.UserStoryRepository;
 import com.agile_project_management.service.IUserStoryService;
 import lombok.RequiredArgsConstructor;
@@ -17,14 +19,23 @@ import java.util.List;
 public class UserStoryServiceImpl implements IUserStoryService {
 
     private final UserStoryRepository userStoryRepository;
-    private final ProductBacklogRepository backlogRepository;
+    private final ProductBacklogRepository productBacklogRepository;
+    private final SprintBacklogRepository sprintBacklogRepository;
 
     @Override
     public UserStory createUserStory(UserStory userStory) {
+        // Lien avec ProductBacklog
         if (userStory.getProductBacklog() != null && userStory.getProductBacklog().getId() != null) {
-            ProductBacklog backlog = backlogRepository.findById(userStory.getProductBacklog().getId())
-                    .orElseThrow(() -> new ResourceNotFoundException("Backlog not found"));
+            ProductBacklog backlog = productBacklogRepository.findById(userStory.getProductBacklog().getId())
+                    .orElseThrow(() -> new ResourceNotFoundException("ProductBacklog not found"));
             userStory.setProductBacklog(backlog);
+        }
+
+        // Lien avec SprintBacklog
+        if (userStory.getSprintBacklog() != null && userStory.getSprintBacklog().getId() != null) {
+            SprintBacklog sb = sprintBacklogRepository.findById(userStory.getSprintBacklog().getId())
+                    .orElseThrow(() -> new ResourceNotFoundException("SprintBacklog not found"));
+            userStory.setSprintBacklog(sb);
         }
 
         if (userStory.getStatus() == null) {
@@ -43,8 +54,13 @@ public class UserStoryServiceImpl implements IUserStoryService {
         story.setStoryPoints(userStoryDetails.getStoryPoints());
         story.setAcceptanceCriteria(userStoryDetails.getAcceptanceCriteria());
 
-        if (userStoryDetails.getSprint() != null) {
-            story.setSprint(userStoryDetails.getSprint());
+        // Gestion du déplacement vers un SprintBacklog
+        if (userStoryDetails.getSprintBacklog() != null) {
+            SprintBacklog sb = sprintBacklogRepository.findById(userStoryDetails.getSprintBacklog().getId())
+                    .orElseThrow(() -> new ResourceNotFoundException("SprintBacklog not found"));
+            story.setSprintBacklog(sb);
+        } else {
+            story.setSprintBacklog(null);
         }
 
         return userStoryRepository.save(story);
@@ -63,12 +79,12 @@ public class UserStoryServiceImpl implements IUserStoryService {
     }
 
     @Override
-    public List<UserStory> getStoriesByBacklog(Long backlogId) {
+    public List<UserStory> getStoriesByProductBacklog(Long backlogId) {
         return userStoryRepository.findByProductBacklogId(backlogId);
     }
 
     @Override
-    public List<UserStory> getStoriesBySprint(Long sprintId) {
-        return userStoryRepository.findBySprintId(sprintId);
+    public List<UserStory> getStoriesBySprintBacklog(Long sprintBacklogId) {
+        return userStoryRepository.findBySprintBacklogId(sprintBacklogId);
     }
 }
